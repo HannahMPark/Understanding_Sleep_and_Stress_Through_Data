@@ -2,9 +2,9 @@
 
 This project aims to answer the following three questions using the dataset:
 
-**How is sleep duration associated with stress level across individuals?**
-**Are individuals with elevated heart rates more likely to report high stress levels?**
-**Does shorter sleep duration (less than 6 hours) predict higher stress levels?**
+**How is sleep duration associated with stress level across individuals?**   
+**Are individuals with elevated heart rates more likely to report high stress levels?**    
+**Does shorter sleep duration (less than 6 hours) predict higher stress levels?**    
 
 
 Adequate sleep plays a critical role in both physical and psychological well-being. Research from the National Sleep Foundation indicates that insufficient sleep is associated with increased stress, impaired emotional regulation, and measurable changes in physiological functioning such as heart rate (https://www.sleepfoundation.org/stress-and-sleep). These findings suggest that sleep, stress, and cardiovascular activity are interconnected, making them important variables to examine together.
