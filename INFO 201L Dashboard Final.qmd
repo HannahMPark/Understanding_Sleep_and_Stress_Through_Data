@@ -1,0 +1,399 @@
+---
+title: "Understanding Sleep and Stress Through Behavioral and Physiological Data"
+author: "Hannah Park & Zoey Ha"
+date: today
+format:
+  dashboard:
+    embed-resources: true
+---
+
+```{r}
+#install.packages("DT")
+#install.packages("plotly")
+library("tidyverse")
+library("DT")
+library("plotly")
+library("dplyr")
+library("ggplot2")
+```
+
+```{r}
+sleep_health_lifestyle_df <- read.csv("Sleep_health_and_lifestyle_dataset.csv")
+stress_detection_df <- read.csv("SaYoPillow.csv")
+```
+
+```{r}
+sleep_health_lifestyle_df <- sleep_health_lifestyle_df |>
+  select(Sleep.Duration, Heart.Rate, Stress.Level)
+
+stress_detection_df <- stress_detection_df |>
+  select(sr.1, hr, sl)
+
+sleep_health_lifestyle_df <- sleep_health_lifestyle_df |>
+  rename(`Sleep Duration` = Sleep.Duration,
+         `Heart Rate` = Heart.Rate,
+         `Stress Level` = Stress.Level)
+
+stress_detection_df <- stress_detection_df |>
+  rename(`Sleep Duration` = sr.1,
+         `Heart Rate` = hr,
+         `Stress Level` = sl)
+
+sleep_health_lifestyle_df <- sleep_health_lifestyle_df |>
+  mutate(
+    `Sleep Duration` = as.integer(round(`Sleep Duration`))
+  )
+
+stress_detection_df <- stress_detection_df |>
+  mutate(
+    `Sleep Duration` = as.integer(round(`Sleep Duration`)),
+    `Heart Rate` = as.integer(round(`Heart Rate`))
+  )
+
+stress_detection_df <- stress_detection_df |>
+  mutate(`Stress Level` = as.integer(`Stress Level`) * 2)
+
+joined_df <- sleep_health_lifestyle_df |>
+  full_join(stress_detection_df, by = c("Sleep Duration", "Heart Rate", "Stress Level"))
+```
+
+
+```{r}
+joined_df <- joined_df |>
+  mutate(
+    `High Stress` = `Stress Level` >= 6
+  )
+
+stress_summary <- joined_df |>
+  group_by(`High Stress`) |>
+  summarize(
+    avg_sleep = mean(`Sleep Duration`, na.rm = TRUE),
+    avg_heart_rate = mean(`Heart Rate`, na.rm = TRUE),
+    count = n()
+  )
+```
+
+# Overview, Data Sources and Context
+
+## Row 1 {height=60%}
+
+::: {.card title="**Research Questions and Project Overview**"}
+
+**How is sleep duration associated with stress level across individuals?**  
+
+**Are individuals with elevated heart rates more likely to report high stress levels?**  
+
+**Does shorter sleep duration (less than 6 hours) predict higher stress levels?**
+<br>
+
+Adequate sleep plays a critical role in both physical and psychological well-being. Research from the National Sleep Foundation indicates that insufficient sleep is associated with increased stress, impaired emotional regulation, and measurable changes in physiological functioning such as heart rate (https://www.sleepfoundation.org/stress-and-sleep). These findings suggest that sleep, stress, and cardiovascular activity are interconnected, making them important variables to examine together.
+
+To investigate these relationships, we use two publicly available datasets from Mendeley Data: the Sleep Health and Lifestyle Dataset (https://data.mendeley.com/datasets/46j8wrc7p7/1 ) and the Human Stress Detection in and through Sleep Dataset (https://www.kaggle.com/datasets/laavanya/human-stress-detection-in-and-through-sleep). Both datasets include measures of sleep duration, heart rate, and stress-related indicators. By combining these datasets, we are able to analyze patterns across behavioral (sleep duration) and physiological (heart rate) variables in relation to reported stress levels.
+
+Understanding these relationships is important because stress is linked to long-term health risks, including cardiovascular disease, weakened immune response, and reduced overall quality of life. Sleep duration is a modifiable behavior, and heart rate is increasingly monitored through wearable technology. By exploring how these factors interact, our analysis aims to provide insight into how everyday health behaviors and physiological signals may be connected.
+
+There are also important ethical considerations and limitations. Some measures in the datasets rely on self-reported stress levels, which may introduce subjective bias. Additionally, the samples may not be fully representative of the broader population due to limited demographic detail. As a result, our findings should be interpreted as associations within the dataset rather than causal conclusions about all individuals.
+:::
+
+## Row 2 {height=40%}
+
+### Row 2 Column 1
+::: {.card title="**Data Context: Dataset 1**"}
+
+- **Public link:** https://data.mendeley.com/datasets/46j8wrc7p7/1   
+- **Created by:** Ben Cutting (Independent researcher Funded by University of Oxford)
+
+This dataset records sleep duration, heart rate, and stress levels for adult
+individuals. Data were collected through a combination of wearable device
+measurements and self-reported surveys. The dataset contains several hundred
+observations collected in recent years across multiple geographic regions. While
+this sample supports exploratory analysis of sleep and stress patterns, it may not
+fully represent the general population due to self-reporting bias and limited
+::: 
+
+### Row 2 Column 2
+::: {.card title="**Data Context: Dataset 2**"}
+- **Public link:** https://www.kaggle.com/datasets/laavanya/human-stress-detection-in-and-through-sleep?select=SaYoPillow.csv
+- **Created by:** Independent researchers and contributors  
+
+This dataset focuses on physiological indicators related to stress during sleep,
+including sensor-based measurements such as heart rate. The data consists of
+hundreds of recorded observations collected in the early 2020s, though geographic
+details are limited. A strength of this dataset is its emphasis on physiological
+signals, while a limitation is the lack of detailed demographic and contextual
+information.
+::: 
+
+
+# Providing Group Information
+
+## Row 1 {height=20%}
+
+::: {.card title="**Group Overview**"}
+Our group focuses on exploring how sleep, stress, and heart rate interact, using data analysis to better understand connections between behavior and physiological health.
+:::
+
+## Row 2 {height=80%}
+
+### Row 2 Column 1
+::: {.card title="**Hannah Park**"}
+University of Washington, The Information School
+
+hpark36@uw.edu
+
+
+I’m currently focusing on data analysis, and I’ve worked on projects like statistical research on the relationship between media and the public.
+I bring strength in hardworking, having strong attention to detail, and being comfortable with tools like R, Python, pandas, NumPy, and C++, linux. 
+
+I’m especially interested in data analysis roles where I can work closely within a team while also collaborating with other teams, and where I can help consult or support businesses by analyzing social and economic data.
+::: 
+
+### Row 2 Column 2
+::: {.card title="**Zoey Ha**"}
+University of Washington, Intended Informatics Major
+
+zoeyha@uw.edu
+
+
+I am interested in the intersection of data analysis and human health, particularly how quantitative insights can inform better decision-making and improve overall well-being. I am drawn to work that connects technical skills with real-world human impact, and I am especially motivated by exploring how patterns in data can reveal meaningful trends in behavior and physiology.
+
+I bring strong attention to detail, thoughtful interpretation of results, and a human-centered perspective to our team. I strive to translate complex analyses into explanations that are both accurate and accessible. 
+::: 
+
+
+
+# Sleep Duration and Stress Patterns
+
+## Row {height=10%}
+<div style="display:flex; align-items:center; text-align: center;"><span style="font-size: 30px;">How is sleep duration associated with stress level across individuals?</span></div>
+
+## Row {height=80%}
+::: {.card title="Scatterplot"}
+```{r}
+ggplot(joined_df, aes(x = `Sleep Duration`, y = `Stress Level`)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", color = "blue") +
+  labs(
+    title = "Association Between Sleep Duration and Stress Level",
+    x = "Sleep Duration (Hours)",
+    y = "Stress Level"
+  )
+```
+:::
+
+### Row {height=80%}
+::: {.card title="Brief Explanation"}
+This scatterplot displays the relationship between sleep duration (measured in hours) and reported stress level for individuals in the combined dataset. Each point represents one observation, showing a participant’s sleep duration and corresponding stress level. The blue regression line summarizes the overall linear trend in the data.
+
+The downward slope of the regression line suggests a negative association between sleep duration and stress level. In general, individuals who report fewer hours of sleep tend to report higher stress levels, while those who sleep longer hours tend to report lower stress. However, variability in the data indicates that sleep duration is not the sole factor influencing stress levels.
+:::
+
+
+
+
+# Heart Rate and Stress Indicators
+
+
+## Row {height=10%}
+<div style="display:flex; align-items:center; text-align: center;"><span style="font-size: 30px;">Are individuals with elevated heart rates more likely to report high stress levels?</span></div>
+
+## Row {height=80%}
+::: {.card title="Bar Graph"}
+
+```{r}
+joined_df <- joined_df |>
+  mutate(
+    `High Heart Rate` = `Heart Rate` > 75,
+    `High Stress` = `Stress Level` >= 6
+  )
+
+ prop_summary <- joined_df |>
+  group_by(`High Heart Rate`) |>
+  summarize(`prop high stress` = mean(`High Stress`, na.rm = TRUE))
+
+ggplot(prop_summary, aes(x = `High Heart Rate`, y = `prop high stress`, fill = `High Heart Rate`)) +
+  geom_col() +
+  labs(
+    title = "Proportion of High Stress by Heart Rate Category",
+    x = "Elevated Heart Rate (>75 bpm)",
+    y = "Proportion Reporting High Stress",
+    fill = "High Heart Rate"
+  )
+```
+:::
+
+### Row {height=80%} 
+::: {.card title="Brief Explanation"}
+This bar chart compares the proportion of individuals reporting high stress levels between those with elevated heart rates and those with lower heart rates. Heart rate was categorized into two groups based on whether it exceeded 75 beats per minute, and stress was categorized as “high” when reported stress levels met or exceeded our defined threshold. The height of each bar represents the proportion of individuals within each heart rate group who reported high stress.
+
+The visualization suggests that individuals with elevated heart rates have a higher proportion of high stress compared to those with lower heart rates. This pattern indicates a positive association between elevated heart rate and reported stress levels. However, while the difference in proportions suggests that high heart rate is associated with greater likelihood of high stress, the data does not establish causation and may be influenced by additional physiological or behavioral factors.
+:::
+
+# Combined Effects: Sleep, Stress, and Heart Rate
+
+## Row {height=10%}
+<div style="display:flex; align-items:center; text-align: center;"><span style="font-size: 30px;">Does shorter sleep duration (less than 6 hours) predict higher stress levels?</span></div>
+
+## Row {height=90% 
+### Column {.tabset}
+::: {.card title="Stress Level by Sleep Duration"}
+```{r}
+library(gganimate)
+library(viridis)
+
+line <- joined_df |>
+  group_by(`Sleep Duration`) |>
+  summarise(`Stress Level` = mean(`Stress Level`, na.rm = TRUE))
+
+plot <- ggplot() +
+  geom_point(data = joined_df, aes(x = `Sleep Duration`, y = `Stress Level`, 
+    color = `Heart Rate`),
+    alpha = 0.7, size = 5
+  ) +
+  geom_line(data = line,
+    aes(x = `Sleep Duration`, y = `Stress Level`),
+    color = "grey40",
+    linewidth = 1
+  ) +
+  scale_color_viridis_c() +
+  labs(
+    title = "Stress Level over Sleep Duration",
+    subtitle = "Sleep Duration: {frame_along} hours",
+    x = "Sleep Duration (hours)",
+    y = "Stress Level",
+    color = "Heart Rate"
+  )
+
+ani_plot <- plot + transition_reveal(`Sleep Duration`)
+animate(ani_plot, nframes = 200, fps = 5)
+```
+::: 
+
+::: {.card title="Stress Level by Sleep Duration Complete Chart"}
+```{r}
+
+library(viridis)
+
+line <- joined_df |>
+  group_by(`Sleep Duration`) |>
+  summarise(`Stress Level` = mean(`Stress Level`, na.rm = TRUE))
+
+plot <- ggplot() +
+  geom_point(
+    data = joined_df,
+    aes(x = `Sleep Duration`, y = `Stress Level`, color = `Heart Rate`),
+    alpha = 0.7,
+    size = 5
+  ) +
+  geom_line(
+    data = line,
+    aes(x = `Sleep Duration`, y = `Stress Level`),
+    color = "grey40",
+    linewidth = 1
+  ) +
+  scale_color_viridis_c() +
+  labs(
+    title = "Stress Level over Sleep Duration",
+    x = "Sleep Duration (hours)",
+    y = "Stress Level",
+    color = "Heart Rate"
+  )
+
+plot
+
+```
+:::
+
+::: {.card title="Average Stress Level Chart"}
+```{r}
+choose_250 <- joined_df |>
+  group_by(`High Stress`) |>
+  sample_n(240)
+
+choose_250 |>
+  summarise(
+    `avg stress level` = round(mean(`Stress Level`, na.rm = TRUE)),
+    count = n()
+  ) |>
+  datatable()
+```
+:::
+
+### Column
+::: {.card title="Brief Explanation"}
+This graph demonstrates relationship between stress level, sleep duration, and heart rate. The line represents the average stress level for each sleep duration and the dot represent heart rate values for each sleep duration and stress levels. From this graph, we can observe that shorter sleep duration (less than 6 hours) tend to have higher stress than lower sleep duration.
+
+The ‘Average Stress Level Chart’ tab supports the observation by showing the mean stress levels for lower and higher sleep duration. In this chart, TRUE represents sleep duration more than 6 hours and FALSE represents less than 6 hours. We randomly choose 240 TRUE and FALSE value from column ‘High Stress.’ The result shows that average stress level for the FALSE is 7 and average stress level for TRUE is 3.
+
+Based on this calculation, we can assume that shorter sleep duration is associated with higher stress levels.
+:::
+
+
+# Coding Notes
+
+
+## Row {height=100%}
+### Row 2 Column 1
+:::{.card title="**Graph 1**"}
+For this visualization, we used geom_smooth(method = "lm") to add a linear regression line to the scatterplot. This function fits a linear model directly within the plot, allowing us to visually assess the direction and strength of association between sleep duration and stress level. While we could have manually calculated regression coefficients using base R modeling functions, geom_smooth() allowed us to integrate the model directly into the visualization in a clear and interpretable way.
+
+We also used the alpha argument in geom_point() to adjust transparency. Because the dataset contains many overlapping points, reducing opacity improves readability by preventing overplotting. These arguments were not heavily emphasized in class, so we referenced the official ggplot2 documentation and online visualization guides to better understand how to improve clarity in dense scatterplots.
+:::
+
+### Row 2 Column 2
+:::{.card title="**Graph 2**"}
+For this analysis, we used mutate() to create logical variables identifying elevated heart rate and high stress. This conditional transformation allowed us to convert continuous variables into categories so we could compare proportions between groups more clearly.
+
+We then applied group_by() and summarize() to calculate the proportion of high stress within each heart rate category. Using mean() on a logical variable efficiently computes proportions in R, which allowed us to quantify differences rather than rely only on visual interpretation. We used geom_col() instead of geom_bar() because our data was already summarized, and we confirmed this distinction using the ggplot2 documentation.
+:::
+
+### Row 2 Column 3
+:::{.card title="**Graph 3**"}
+In the Graph 3, we used gganimate and virdis libraries, which were essential library to creating an animated graph. Since animated graphs were not covered in class, we searched external resources to learn how to create animated graph.
+
+Also, we used alpha and size parameters in geom_point() and linewidth parameter in geom_lime, and  scale_color_viridis_c(). Alpha to adjust the transparent of the dot and used size to set the size. Linewidth is used to make the line thicker. We used scale_color_viridis_c() because default color scale made it difficult to overserve differences in heart rate values. These feature were also not covered in class. 
+
+Additionally, we used ‘subtitle = "Sleep Duration: {frame_along} hours”’
+and ani_plot <- plot + transition_reveal(`Sleep Duration’) 
+These were used to show how values changes over time. It was helpful to visualize how sleep duration, stress level, and heart rate change across each hour.
+
+Lastly, we used the animated syntax: 
+animate(ani_plot, nframes = 200, fps = 5)
+This syntax is slow down the animation. It helpful to observe clearly, since the animation default speed was too fast. 
+
+These are some of the external resources to learn new parameter and functions: 
+
+https://quarto.org/docs/dashboards/layout.html 
+https://r-graph-gallery.com/connected_scatterplot_ggplot2.html
+https://r-graph-gallery.com/287-smooth-animation-with-tweenr.html
+https://r-graph-gallery.com/package/gganimate.html
+:::
+
+
+
+# Conclusion
+
+## Row {height=100%}
+### Row 2 Column 1
+:::{.card title="**Three Major Takeaways**"}
+Our analysis reveals three key patterns across the combined datasets. 
+First, sleep duration demonstrates a negative association with stress levels. Individuals reporting fewer hours of sleep tend to report higher stress, as reflected in the downward slope of the regression line in our scatterplot. 
+
+Second, elevated heart rate appears to be associated with a higher likelihood of reporting high stress, as shown by the increased proportion of high-stress cases among individuals with heart rates above 75 bpm. 
+
+Third, when examining sleep duration, stress level, and heart rate together, shorter sleep is often accompanied by both higher stress and elevated physiological activity, suggesting that behavioral and physiological measures are interconnected.
+:::
+
+### Row 2 Column 1
+:::{.card title="**Over / Under / Bias**"}
+While these patterns are consistent across the dataset, our analysis may overestimate or underestimate the strength of these relationships due to sampling limitations. Both datasets rely partially on self-reported measures and wearable device data, which may introduce measurement error. Additionally, the datasets are not drawn from a nationally representative sample and may lack demographic diversity. Because we joined two separate datasets that may have different measurement scales and collection methods, some relationships may appear stronger or weaker than they truly are in the broader population.
+:::
+
+### Row 2 Column 1
+:::{.card title="**Future Directions**"}
+Future research could strengthen this analysis by incorporating longitudinal data to observe how sleep and stress interact over time. Including demographic variables such as age, occupation, or geographic region would also allow for more nuanced subgroup analysis. Additionally, applying formal statistical modeling techniques, such as correlation coefficients or regression diagnostics, could provide more precise estimates of the strength of association between sleep duration, heart rate, and stress level. These steps would allow for a more robust understanding of how behavioral and physiological indicators interact in shaping overall well-being.
+:::
+
+
+
+
